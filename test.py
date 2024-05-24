@@ -1,7 +1,8 @@
 from IPython.display import Markdown
 import google.generativeai as genai
+from config import GEMINI_API_KEY
 
-genai.configure(api_key="AIzaSyDUPoFft6yk0N7yUUozwqyLF9rt0YFisqI")
+genai.configure(api_key=GEMINI_API_KEY)
 
 generation_config = {
   "temperature": 1,
