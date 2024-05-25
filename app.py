@@ -141,7 +141,7 @@ def results_page():
     else:
         st.write("Sorry, no image found for the suggested dish.")
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns(3, gap="large")
     with col1:
         if st.button("Homepage"):
             go_to_page('home')
@@ -149,7 +149,7 @@ def results_page():
         if st.button("Change preferences", type="primary"):
             go_to_page('preferences')
     with col3:
-        if st.button("Get another"):
+        if st.button("Get another recipe"):
             go_to_page('loading')
 
 
