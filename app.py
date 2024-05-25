@@ -103,7 +103,7 @@ def preferences_page():
     container = st.container(border=True)
     container.write("Ingredients:")
     for ingredients in st.session_state['ingredients_list']:
-        st.container.write(ingredients)
+        container.write(ingredients)
     
     with st.form(key='preferences_form'):
         add_ingredients = st.text_input("Did we miss something?")
