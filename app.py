@@ -1,9 +1,9 @@
 import streamlit as st
 import requests
-from io import BytesIO
 from PIL import Image
 import google.generativeai as genai
 import os
+import io
 
 BING_API_KEY = os.getenv('BING_API_KEY')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
