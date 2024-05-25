@@ -3,11 +3,14 @@ import requests
 from io import BytesIO
 from PIL import Image
 import google.generativeai as genai
-from openai import OpenAI
-from config import OPENAI_API_KEY, BING_API_KEY, GEMINI_API_KEY
+from config import BING_API_KEY, GEMINI_API_KEY
+import os
 
-openai_api_key = OPENAI_API_KEY
-client = OpenAI(api_key=openai_api_key)
+BING_API_KEY = os.getenv('BING_API_KEY')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+
+if not all([OPENAI_API_KEY, BING_API_KEY, GEMINI_API_KEY]):
+    raise ValueError("One or more API keys are not set in environment variables")
 
 bing_api_key = BING_API_KEY
 
