@@ -84,10 +84,19 @@ def go_to_page(page):
     st.experimental_rerun()
 
 def title_page():
-    st.title("letAIcook")
-    st.write("Upload a photo of your fridge, and we'll suggest a dish for you to prepare.")
-    if st.button("Start", type="primary"):
+    st.title("🍳 letAIcook: Your Personal AI Chef!")
+    st.subheader("Discover Delicious Recipes Based on What's in Your Fridge")
+    st.write("""
+    **Welcome to letAIcook!** 
+    
+    Upload photos of your fridge, and our AI will help you identify the ingredients you have. 
+    Based on your dietary preferences, we'll suggest mouth-watering dishes and provide you with detailed recipes.
+    
+    Ready to turn your fridge into a feast? Click the button below to get started!
+    """)
+    if st.button("Start Your Culinary Journey", type="primary"):
         go_to_page('upload')
+
 
 def upload_page():
     st.title("Let’s see what you got in your fridge")
