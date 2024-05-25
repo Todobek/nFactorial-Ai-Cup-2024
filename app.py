@@ -8,7 +8,7 @@ import os
 BING_API_KEY = os.getenv('BING_API_KEY')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
-if not all([OPENAI_API_KEY, BING_API_KEY, GEMINI_API_KEY]):
+if not all([BING_API_KEY, GEMINI_API_KEY]):
     raise ValueError("One or more API keys are not set in environment variables")
 
 bing_api_key = BING_API_KEY
