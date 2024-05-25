@@ -29,9 +29,9 @@ model = genai.GenerativeModel(
 
 photo_prompt = "What ingredients do you see? Estimate the amount of each ingredient. IMPORTANT: Write straightforward list answer with no explanations"
 dish_prompt = "Suggest a dish based on the following ingredients: {ingredients}. Consider these preferences: {preferences}. IMPORTANT: suggest dish only, no recipe and no additional comments"
-recipe_prompt = "Suggest a recipe for the {dish}. I have following ingredients: {ingredients} and these preferences: {preferences}. IMPORTANT: suggest recipe and its details only; do not write your opinion or speculations. VERY IMPORTANT: all the text should be in the same font size."
+recipe_prompt = "Suggest a recipe for the {dish}. I have following ingredients: {ingredients} and these preferences: {preferences}. IMPORTANT: suggest recipe and its details only; do not write your opinion or speculations; use EU metrics; VERY IMPORTANT: all the text should be in the same font size."
 
-def analyze_fridge(image):
+def analyze_fridge(image):  
     image_path = "temp_fridge.jpg"
     image.save(image_path, format="JPEG")
 
@@ -88,7 +88,7 @@ def title_page():
 
 def upload_page():
     st.title("Let’s see what you got in your fridge")
-    uploaded_file = st.file_uploader("Choose an image...", type="jpg")
+    uploaded_file = st.file_uploader("Choose an image...", type= ['png', 'jpg'], accept_multiple_files=True)
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
         st.image(image, caption="Uploaded Image.", use_column_width=True)
@@ -102,6 +102,7 @@ def preferences_page():
     container.write("Ingredients:")
     container.write(st.session_state['ingredients'])
     with st.form(key='preferences_form'):
+        add_ingredients = st.text_input("Did we miss something?")
         diet = st.radio("Diet preference", ['Vegan', 'Vegetarian', 'Meat Eater', 'No preference'])
         meal_type = st.radio("Meal type", ['Breakfast', 'Lunch', 'Dinner', 'Snack'])
         calories = st.slider("Number of calories", 100, 2000, 500, 50)
@@ -119,6 +120,7 @@ def preferences_page():
             'hungry': hungry,
             'additions': additions
         }
+        st.session_state['ingredients'] = st.session_state['ingredients'] + " " + add_ingredients
         go_to_page('loading')
 
 def loading_page():
