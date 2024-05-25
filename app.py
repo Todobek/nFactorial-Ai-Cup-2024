@@ -33,7 +33,10 @@ recipe_prompt = "Suggest a recipe for the {dish}. I have following ingredients: 
 
 def analyze_fridge(image):
     image_path = "temp_fridge.jpg"
-    image.save(image_path, format="JPEG")
+    if image.format == "JPEG":
+        image.save(image_path, format="JPEG")
+    else:
+        image.save(image_path, format="PNG")
 
     sample_file = genai.upload_file(path=image_path, display_name="fridge")
     response = model.generate_content([photo_prompt, sample_file])
