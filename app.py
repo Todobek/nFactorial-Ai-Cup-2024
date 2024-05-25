@@ -65,8 +65,8 @@ def get_dish_image(dish_name):
 # Initialize session state
 if 'page' not in st.session_state:
     st.session_state['page'] = 'home'
-if 'ingredients' not in st.session_state:
-    st.session_state['ingredients'] = ''
+if 'ingredients_list' not in st.session_state:
+    st.session_state['ingredients_list'] = []
 if 'preferences' not in st.session_state:
     st.session_state['preferences'] = {}
 if 'dish' not in st.session_state:
@@ -88,19 +88,23 @@ def title_page():
 
 def upload_page():
     st.title("Let’s see what you got in your fridge")
-    uploaded_file = st.file_uploader("Choose an image...", type= ['png', 'jpg'], accept_multiple_files=True)
-    if uploaded_file is not None:
-        image = Image.open(uploaded_file)
-        st.image(image, caption="Uploaded Image.", use_column_width=True)
+    uploaded_file = st.file_uploader("Choose an image...", type= ['png', 'jpg'])
+    if uploaded_files:
+        images = [Image.open(file) for file in uploaded_files]
+        for image in images:
+            st.image(image, caption="Uploaded Image.", use_column_width=True)
+
         if st.button("Next"):
-            st.session_state['ingredients'] = analyze_fridge(image)
+            st.session_state['ingredients_list'] = [analyze_fridge(image) for image in images]
             go_to_page('preferences')
 
 def preferences_page():
     st.title("Ingredients and preferences")
     container = st.container(border=True)
     container.write("Ingredients:")
-    container.write(st.session_state['ingredients'])
+    for ingredients in st.session_state['ingredients_list']:
+        stcontainer.write(ingredients)
+    
     with st.form(key='preferences_form'):
         add_ingredients = st.text_input("Did we miss something?")
         diet = st.radio("Diet preference", ['Vegan', 'Vegetarian', 'Meat Eater', 'No preference'])
@@ -120,20 +124,21 @@ def preferences_page():
             'hungry': hungry,
             'additions': additions
         }
-        st.session_state['ingredients'] = st.session_state['ingredients'] + " " + add_ingredients
+        st.session_state['ingredients_list'].append(add_ingredients)
         go_to_page('loading')
 
 def loading_page():
     st.title("Please wait")
     st.write("Processing your request...")
-    ingredients = st.session_state['ingredients']
-    preferences = st.session_state['preferences']
-    preferences_str = ', '.join([f"{key}: {value}" for key, value in preferences.items()])
-    dish = suggest_dish(ingredients, preferences_str)
-    recipe = suggest_recipe(ingredients, preferences_str, dish)
-    st.session_state['dish'] = dish
-    st.session_state['recipe'] = recipe
-    st.session_state['dish_image'] = get_dish_image(dish)
+    with st.spinner('Generating suggestions...'):
+        all_ingredients = ", ".join(st.session_state['ingredients_list'])
+        preferences = st.session_state['preferences']
+        preferences_str = ', '.join([f"{key}: {value}" for key, value in preferences.items()])
+        dish = suggest_dish(all_ingredients, preferences_str)
+        recipe = suggest_recipe(all_ingredients, preferences_str, dish)
+        st.session_state['dish'] = dish
+        st.session_state['recipe'] = recipe
+        st.session_state['dish_image'] = get_dish_image(dish)
     go_to_page('results')
 
 def results_page():
