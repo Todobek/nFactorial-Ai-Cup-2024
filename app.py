@@ -3,7 +3,6 @@ import requests
 from io import BytesIO
 from PIL import Image
 import google.generativeai as genai
-from config import BING_API_KEY, GEMINI_API_KEY
 import os
 
 BING_API_KEY = os.getenv('BING_API_KEY')
