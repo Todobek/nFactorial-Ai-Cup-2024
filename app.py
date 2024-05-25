@@ -1,9 +1,9 @@
 import streamlit as st
 import requests
+from io import BytesIO
 from PIL import Image
 import google.generativeai as genai
 import os
-import io
 
 BING_API_KEY = os.getenv('BING_API_KEY')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
@@ -29,9 +29,9 @@ model = genai.GenerativeModel(
 
 photo_prompt = "What ingredients do you see? Estimate the amount of each ingredient. IMPORTANT: Write straightforward list answer with no explanations"
 dish_prompt = "Suggest a dish based on the following ingredients: {ingredients}. Consider these preferences: {preferences}. IMPORTANT: suggest dish only, no recipe and no additional comments"
-recipe_prompt = "Suggest a recipe for the {dish}. I have following ingredients: {ingredients} and these preferences: {preferences}. IMPORTANT: suggest recipe and its details only; do not write your opinion or speculations; use EU metrics; VERY IMPORTANT: all the text should be in the same font size."
+recipe_prompt = "Suggest a recipe for the {dish}. I have following ingredients: {ingredients} and these preferences: {preferences}. IMPORTANT: suggest recipe and its details only; do not write your opinion or speculations. VERY IMPORTANT: all the text should be in the same font size."
 
-def analyze_fridge(image):  
+def analyze_fridge(image):
     image_path = "temp_fridge.jpg"
     image.save(image_path, format="JPEG")
 
@@ -65,8 +65,8 @@ def get_dish_image(dish_name):
 # Initialize session state
 if 'page' not in st.session_state:
     st.session_state['page'] = 'home'
-if 'ingredients_list' not in st.session_state:
-    st.session_state['ingredients_list'] = []
+if 'ingredients' not in st.session_state:
+    st.session_state['ingredients'] = ''
 if 'preferences' not in st.session_state:
     st.session_state['preferences'] = {}
 if 'dish' not in st.session_state:
@@ -88,23 +88,19 @@ def title_page():
 
 def upload_page():
     st.title("Let’s see what you got in your fridge")
-    uploaded_files = st.file_uploader("Choose images...", type=["jpg", "png"], accept_multiple_files=True)
-    if uploaded_files:
-        images = [Image.open(io.BytesIO(file.read())) for file in uploaded_files]
-        for image in images:
-            st.image(image, caption="Uploaded Image.", use_column_width=True)
-
+    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png"])
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file)
+        st.image(image, caption="Uploaded Image.", use_column_width=True)
         if st.button("Next"):
-            st.session_state['ingredients_list'] = [analyze_fridge(image) for image in images]
+            st.session_state['ingredients'] = analyze_fridge(image)
             go_to_page('preferences')
 
 def preferences_page():
     st.title("Ingredients and preferences")
     container = st.container(border=True)
     container.write("Ingredients:")
-    for ingredients in st.session_state['ingredients_list']:
-        container.write(ingredients)
-    
+    container.write(st.session_state['ingredients'])
     with st.form(key='preferences_form'):
         add_ingredients = st.text_input("Did we miss something?")
         diet = st.radio("Diet preference", ['Vegan', 'Vegetarian', 'Meat Eater', 'No preference'])
@@ -124,21 +120,20 @@ def preferences_page():
             'hungry': hungry,
             'additions': additions
         }
-        st.session_state['ingredients_list'].append(add_ingredients)
+        st.session_state['ingredients'] = st.session_state['ingredients'] + " " + add_ingredients
         go_to_page('loading')
 
 def loading_page():
     st.title("Please wait")
     st.write("Processing your request...")
-    with st.spinner('Generating suggestions...'):
-        all_ingredients = ", ".join(st.session_state['ingredients_list'])
-        preferences = st.session_state['preferences']
-        preferences_str = ', '.join([f"{key}: {value}" for key, value in preferences.items()])
-        dish = suggest_dish(all_ingredients, preferences_str)
-        recipe = suggest_recipe(all_ingredients, preferences_str, dish)
-        st.session_state['dish'] = dish
-        st.session_state['recipe'] = recipe
-        st.session_state['dish_image'] = get_dish_image(dish)
+    ingredients = st.session_state['ingredients']
+    preferences = st.session_state['preferences']
+    preferences_str = ', '.join([f"{key}: {value}" for key, value in preferences.items()])
+    dish = suggest_dish(ingredients, preferences_str)
+    recipe = suggest_recipe(ingredients, preferences_str, dish)
+    st.session_state['dish'] = dish
+    st.session_state['recipe'] = recipe
+    st.session_state['dish_image'] = get_dish_image(dish)
     go_to_page('results')
 
 def results_page():
