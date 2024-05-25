@@ -88,7 +88,7 @@ def title_page():
 
 def upload_page():
     st.title("Let’s see what you got in your fridge")
-    uploaded_files = st.file_uploader("Choose images...", type="jpg", accept_multiple_files=True)
+    uploaded_files = st.file_uploader("Choose images...", type=["jpg", "png"], accept_multiple_files=True)
     if uploaded_files:
         images = [Image.open(io.BytesIO(file.read())) for file in uploaded_files]
         for image in images:
