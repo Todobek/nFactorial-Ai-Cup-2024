@@ -19,24 +19,34 @@ letAIcook is a Streamlit web application that helps you discover delicious recip
 To run this project locally, follow these steps:
 
 1. **Clone the Repository**:
+   ```bash
    git clone https://github.com/your-username/letAIcook.git
    cd letAIcook
+   ```
 
 2. **Create a Virtual Environment**:
+   ```bash
     python -m venv venv
     `venv\Scripts\activate`
+   ```
 
 3. **Install the Required Dependencies**:
+   ```bash
     pip install -r requirements.txt
+   ```
 
 4. **Set Up Environment Variables:**
 Set the following environment variables with your API keys. You can do this by adding them to your shell profile (.bashrc, .zshrc, etc.) or creating a .env file in the root directory.
+   ```bash
     export BING_API_KEY="your-bing-api-key"
     export GEMINI_API_KEY="your-gemini-api-key"
+   ```
 
 
 5. **Run the Application:**
+    ```bash
     streamlit run main.py
+    ```
 
 
 ## Typeform to submit:
